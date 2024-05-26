@@ -1,0 +1,116 @@
+//Creating city Table
+CREATE TABLE t_city (
+    c_cid SERIAL PRIMARY KEY,
+    c_cname VARCHAR(225) NOT NULL,
+    c_sid INT NOT NULL,
+    FOREIGN KEY (c_sid) REFERENCES t_state(c_sid)
+);
+
+
+//creating state table
+CREATE TABLE t_state (
+    c_sid SERIAL PRIMARY KEY,
+    c_sname VARCHAR(225) NOT NULL
+);
+
+
+//Creating person table 
+CREATE TABLE t_person (
+    c_id SERIAL PRIMARY KEY,
+    c_name VARCHAR(225) NOT NULL,
+    c_email VARCHAR(225) NOT NULL,
+    c_phone VARCHAR(225) NOT NULL,
+    c_address VARCHAR(225),
+    c_sid INT NOT NULL,
+    c_cid INT NOT NULL,
+    c_isagree BOOLEAN NOT NULL,
+    FOREIGN KEY (c_sid) REFERENCES t_state(c_sid),
+    FOREIGN KEY (c_cid) REFERENCES t_city(c_cid)
+);
+
+
+
+
+// creating store procedure for insert
+CREATE OR REPLACE PROCEDURE insert_t_person(
+    p_c_name VARCHAR,
+    p_c_email VARCHAR,
+    p_c_phone VARCHAR,
+    p_c_address VARCHAR,
+    p_c_sid INT,
+    p_c_cid INT,
+    p_c_isagree BOOLEAN
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO public.t_person(
+         c_name, c_email, c_phone, c_address, c_sid, c_cid, c_isagree)
+    VALUES ( 
+        p_c_name, 
+        p_c_email, 
+        p_c_phone, 
+        p_c_address, 
+        p_c_sid, 
+        p_c_cid, 
+        p_c_isagree
+    );
+END;
+$$;
+
+
+// creating store procedure for update
+CREATE OR REPLACE PROCEDURE update_t_person(
+    p_c_id INT,
+    p_c_name VARCHAR,
+    p_c_email VARCHAR,
+    p_c_phone VARCHAR,
+    p_c_address VARCHAR,
+    p_c_sid INT,
+    p_c_cid INT,
+    p_c_isagree BOOLEAN
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE public.t_person
+    SET c_name = p_c_name,
+        c_email = p_c_email,
+        c_phone = p_c_phone,
+        c_address = p_c_address,
+        c_sid = p_c_sid,
+        c_cid = p_c_cid,
+        c_isagree = p_c_isagree
+    WHERE c_id = p_c_id;
+END;
+$$;
+
+
+//creating store procedure for delete
+CREATE OR REPLACE PROCEDURE delete_t_person(
+	p_c_id integer)
+LANGUAGE 'plpgsql'
+AS $$
+BEGIN
+	DELETE FROM public.t_person
+	WHERE c_id = p_c_id;
+END;
+$$;
+
+
+
+//query for get all data of table t_person
+select * from t_person
+
+
+//query for get all data of table t_state
+select * from t_state 
+
+
+//query for selecting city according to state id
+SELECT c_cid, c_cname, c_sid FROM public.t_city where c_sid = @id;
+
+
+
+
+
